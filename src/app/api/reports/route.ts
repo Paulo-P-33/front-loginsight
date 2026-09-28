@@ -4,9 +4,17 @@ import { parseRouteReport, summarizeByPlate } from "@/lib/parse-report";
 import { addReportBatch, deleteReportBatch, readReportBatches } from "@/lib/report-store";
 import type { ReportBatch } from "@/types/reports";
 
+const STORAGE_ERROR_MESSAGE =
+  "Não foi possível acessar o armazenamento de relatórios. Verifique se o Vercel Blob está configurado (BLOB_READ_WRITE_TOKEN).";
+
 export async function GET() {
-  const batches = await readReportBatches();
-  return NextResponse.json({ batches });
+  try {
+    const batches = await readReportBatches();
+    return NextResponse.json({ batches });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ error: STORAGE_ERROR_MESSAGE }, { status: 500 });
+  }
 }
 
 export async function POST(request: Request) {
@@ -54,7 +62,12 @@ export async function POST(request: Request) {
     entries,
   };
 
-  await addReportBatch(batch);
+  try {
+    await addReportBatch(batch);
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ error: STORAGE_ERROR_MESSAGE }, { status: 500 });
+  }
 
   return NextResponse.json({ batch });
 }
@@ -67,6 +80,12 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: "ID do relatório não informado." }, { status: 400 });
   }
 
-  await deleteReportBatch(id);
+  try {
+    await deleteReportBatch(id);
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ error: STORAGE_ERROR_MESSAGE }, { status: 500 });
+  }
+
   return NextResponse.json({ success: true });
 }
