@@ -3,28 +3,47 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CheckCircle2, ChevronLeft, Truck } from "lucide-react";
+import { CheckCircle2, ChevronLeft, Truck, X } from "lucide-react";
 import { navItems } from "@/lib/dashboard-data";
 import type { ImportRecord } from "@/types/dashboard";
 
 interface SidebarProps {
   collapsed: boolean;
+  mobileOpen: boolean;
   onToggle: () => void;
+  onMobileClose: () => void;
   defaultActive?: string;
   badgeCounts?: Partial<Record<string, number>>;
   lastImport?: ImportRecord;
 }
 
-export function Sidebar({ collapsed, onToggle, defaultActive, badgeCounts = {}, lastImport }: SidebarProps) {
+export function Sidebar({
+  collapsed,
+  mobileOpen,
+  onToggle,
+  onMobileClose,
+  defaultActive,
+  badgeCounts = {},
+  lastImport,
+}: SidebarProps) {
   const [active, setActive] = useState(defaultActive ?? navItems[0]?.label);
   const pathname = usePathname();
+  const showLabels = !collapsed || mobileOpen;
 
   return (
-    <aside
-      className={`flex h-screen shrink-0 flex-col border-r border-slate-200 bg-white transition-[width] duration-200 ${
-        collapsed ? "w-20" : "w-64"
-      }`}
-    >
+    <>
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-slate-900/40 md:hidden"
+          onClick={onMobileClose}
+          aria-hidden="true"
+        />
+      )}
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 flex h-screen w-64 shrink-0 flex-col border-r border-slate-200 bg-white transition-transform duration-200 md:relative md:z-auto md:translate-x-0 md:transition-[width] ${
+          mobileOpen ? "translate-x-0" : "-translate-x-full"
+        } ${collapsed ? "md:w-20" : "md:w-64"}`}
+      >
       <div className="flex items-center gap-3 border-b border-slate-100 px-5 py-5">
         <span
           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-white"
@@ -32,11 +51,21 @@ export function Sidebar({ collapsed, onToggle, defaultActive, badgeCounts = {}, 
         >
           <Truck className="h-5 w-5" />
         </span>
-        {!collapsed && (
-          <div className="min-w-0">
+        {showLabels && (
+          <div className="min-w-0 flex-1">
             <p className="truncate text-base font-semibold text-slate-900">RouteManager</p>
             <p className="truncate text-xs text-slate-500">Gestão de Rotas</p>
           </div>
+        )}
+        {mobileOpen && (
+          <button
+            type="button"
+            onClick={onMobileClose}
+            aria-label="Fechar menu"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 md:hidden"
+          >
+            <X className="h-5 w-5" aria-hidden="true" />
+          </button>
         )}
       </div>
 
@@ -51,8 +80,8 @@ export function Sidebar({ collapsed, onToggle, defaultActive, badgeCounts = {}, 
             const content = (
               <>
                 <Icon className="h-5 w-5 shrink-0" aria-hidden="true" />
-                {!collapsed && <span className="flex-1 truncate text-left">{label}</span>}
-                {!collapsed && !!badgeCount && (
+                {showLabels && <span className="flex-1 truncate text-left">{label}</span>}
+                {showLabels && !!badgeCount && (
                   <span className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-rose-500 px-1.5 text-xs font-semibold text-white">
                     {badgeCount}
                   </span>
@@ -65,8 +94,9 @@ export function Sidebar({ collapsed, onToggle, defaultActive, badgeCounts = {}, 
                 {href ? (
                   <Link
                     href={href}
+                    onClick={onMobileClose}
                     aria-current={isActive ? "page" : undefined}
-                    title={collapsed ? label : undefined}
+                    title={showLabels ? undefined : label}
                     className={itemClassName}
                   >
                     {content}
@@ -74,9 +104,12 @@ export function Sidebar({ collapsed, onToggle, defaultActive, badgeCounts = {}, 
                 ) : (
                   <button
                     type="button"
-                    onClick={() => setActive(label)}
+                    onClick={() => {
+                      setActive(label);
+                      onMobileClose();
+                    }}
                     aria-current={isActive ? "page" : undefined}
-                    title={collapsed ? label : undefined}
+                    title={showLabels ? undefined : label}
                     className={itemClassName}
                   >
                     {content}
@@ -88,7 +121,7 @@ export function Sidebar({ collapsed, onToggle, defaultActive, badgeCounts = {}, 
         </ul>
       </nav>
 
-      {lastImport && !collapsed && (
+      {lastImport && showLabels && (
         <div className="border-t border-slate-100 p-3">
           <div className="rounded-xl bg-slate-50 p-3">
             <div className="flex items-center gap-2">
@@ -106,7 +139,7 @@ export function Sidebar({ collapsed, onToggle, defaultActive, badgeCounts = {}, 
         </div>
       )}
 
-      <div className="border-t border-slate-100 px-3 py-4">
+      <div className="hidden border-t border-slate-100 px-3 py-4 md:block">
         <button
           type="button"
           onClick={onToggle}
@@ -120,6 +153,7 @@ export function Sidebar({ collapsed, onToggle, defaultActive, badgeCounts = {}, 
           {!collapsed && <span>Recolher menu</span>}
         </button>
       </div>
-    </aside>
+      </aside>
+    </>
   );
 }

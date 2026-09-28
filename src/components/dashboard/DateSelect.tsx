@@ -33,7 +33,7 @@ export function DateSelect({ defaultValue, onChange }: DateSelectProps) {
             onChange?.(event.target.value);
           }
         }}
-        className="w-32 bg-transparent text-sm text-slate-600 outline-none"
+        className="w-28 bg-transparent text-sm text-slate-600 outline-none sm:w-32"
       />
     </div>
   );
