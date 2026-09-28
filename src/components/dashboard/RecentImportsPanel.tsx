@@ -12,7 +12,7 @@ export function RecentImportsPanel() {
   useEffect(() => {
     let cancelled = false;
 
-    fetch("/api/reports")
+    fetch("/api/reports", { cache: "no-store" })
       .then((response) => response.json())
       .then((data) => {
         if (!cancelled) setBatches((data.batches as ReportBatch[]) ?? []);

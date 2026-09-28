@@ -36,6 +36,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# local fallback storage for relatórios (dev only, no BLOB_READ_WRITE_TOKEN)
+/.local-data/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

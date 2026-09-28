@@ -18,7 +18,7 @@ function ReportsContent() {
 
   const loadBatches = useCallback(async () => {
     try {
-      const response = await fetch("/api/reports");
+      const response = await fetch("/api/reports", { cache: "no-store" });
       const data = await response.json();
 
       if (!response.ok) {
@@ -48,7 +48,19 @@ function ReportsContent() {
   }, [loadBatches]);
 
   async function handleDelete(id: string) {
-    await fetch(`/api/reports?id=${id}`, { method: "DELETE" });
+    try {
+      const response = await fetch(`/api/reports?id=${id}`, { method: "DELETE" });
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        setLoadError(data?.error ?? "Não foi possível excluir o relatório.");
+        return;
+      }
+    } catch {
+      setLoadError("Falha de conexão ao excluir o relatório.");
+      return;
+    }
+
+    setLoadError(null);
     const remaining = (batches ?? []).filter((batch) => batch.id !== id);
     setBatches(remaining);
     if (selectedId === id) {
