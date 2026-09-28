@@ -14,18 +14,32 @@ function ReportsContent() {
   const searchParams = useSearchParams();
   const [batches, setBatches] = useState<ReportBatch[] | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const loadBatches = useCallback(async () => {
-    const response = await fetch("/api/reports");
-    const data = await response.json();
-    const loaded = (data.batches as ReportBatch[]) ?? [];
-    setBatches(loaded);
+    try {
+      const response = await fetch("/api/reports");
+      const data = await response.json();
 
-    const requestedId = searchParams.get("batch");
-    if (requestedId && loaded.some((batch) => batch.id === requestedId)) {
-      setSelectedId(requestedId);
-    } else if (loaded.length > 0) {
-      setSelectedId(loaded[0].id);
+      if (!response.ok) {
+        setLoadError(data.error ?? "Não foi possível carregar os relatórios.");
+        setBatches([]);
+        return;
+      }
+
+      setLoadError(null);
+      const loaded = (data.batches as ReportBatch[]) ?? [];
+      setBatches(loaded);
+
+      const requestedId = searchParams.get("batch");
+      if (requestedId && loaded.some((batch) => batch.id === requestedId)) {
+        setSelectedId(requestedId);
+      } else if (loaded.length > 0) {
+        setSelectedId(loaded[0].id);
+      }
+    } catch {
+      setLoadError("Falha de conexão ao carregar os relatórios.");
+      setBatches([]);
     }
   }, [searchParams]);
 
@@ -62,7 +76,11 @@ function ReportsContent() {
 
         {isLoading && <p className="text-sm text-slate-400">Carregando...</p>}
 
-        {!isLoading && batches.length === 0 && (
+        {loadError && (
+          <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{loadError}</p>
+        )}
+
+        {!isLoading && !loadError && batches.length === 0 && (
           <section className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center">
             <span className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 text-slate-400" aria-hidden="true">
               <FileSpreadsheet className="h-7 w-7" />
