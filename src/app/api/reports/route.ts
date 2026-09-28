@@ -4,6 +4,8 @@ import { parseRouteReport, summarizeByPlate } from "@/lib/parse-report";
 import { addReportBatch, deleteReportBatch, readReportBatches } from "@/lib/report-store";
 import type { ReportBatch } from "@/types/reports";
 
+export const dynamic = "force-dynamic";
+
 const STORAGE_ERROR_MESSAGE =
   "Não foi possível acessar o armazenamento de relatórios. Verifique se o Vercel Blob está configurado (BLOB_READ_WRITE_TOKEN).";
 
