@@ -26,7 +26,7 @@ export function Header({
   onDateChange,
 }: HeaderProps) {
   return (
-    <header className="flex items-center justify-between gap-4 border-b border-slate-200 bg-white px-6 py-4">
+    <header className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 py-3 sm:gap-4 sm:px-6 sm:py-4">
       <button
         type="button"
         onClick={onToggleSidebar}
@@ -43,7 +43,7 @@ export function Header({
         </div>
       )}
 
-      <div className="flex flex-1 items-center justify-end gap-3">
+      <div className="flex flex-1 flex-wrap items-center justify-end gap-2 sm:gap-3">
         <span className="hidden text-sm font-medium text-slate-400 md:inline">SVC:</span>
         <SvcSelect defaultValue={defaultSvc} />
         <DateSelect defaultValue={defaultDate} onChange={onDateChange} />

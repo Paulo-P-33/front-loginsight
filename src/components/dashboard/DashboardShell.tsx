@@ -35,6 +35,7 @@ export function DashboardShell({
   const router = useRouter();
   const [authStatus, setAuthStatus] = useState<"checking" | "authenticated">("checking");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated()) {
@@ -48,18 +49,25 @@ export function DashboardShell({
     return <div className="min-h-screen bg-slate-50" />;
   }
 
+  function toggleSidebar() {
+    setSidebarCollapsed((value) => !value);
+    setMobileSidebarOpen((value) => !value);
+  }
+
   return (
     <div className="flex min-h-screen bg-slate-50">
       <Sidebar
         collapsed={sidebarCollapsed}
-        onToggle={() => setSidebarCollapsed((value) => !value)}
+        mobileOpen={mobileSidebarOpen}
+        onToggle={toggleSidebar}
+        onMobileClose={() => setMobileSidebarOpen(false)}
         defaultActive={sidebarActive}
         badgeCounts={sidebarBadgeCounts}
         lastImport={lastImport}
       />
       <div className="flex min-w-0 flex-1 flex-col">
         <Header
-          onToggleSidebar={() => setSidebarCollapsed((value) => !value)}
+          onToggleSidebar={toggleSidebar}
           greetingTitle={greetingTitle}
           greetingSubtitle={greetingSubtitle}
           defaultSvc={defaultSvc}
@@ -67,7 +75,7 @@ export function DashboardShell({
           notificationCount={notificationCount}
           onDateChange={onDateChange}
         />
-        <main className="flex-1 overflow-y-auto p-6">{children}</main>
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6">{children}</main>
       </div>
     </div>
   );

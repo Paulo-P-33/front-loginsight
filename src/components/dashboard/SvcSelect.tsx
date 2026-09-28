@@ -24,7 +24,7 @@ export function SvcSelect({ defaultValue }: SvcSelectProps) {
           className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:border-slate-300 hover:bg-slate-50"
         >
           <Truck className="h-4 w-4 text-slate-400" aria-hidden="true" />
-          <span className="max-w-[10rem] truncate">{selected ?? "Selecione um SVC"}</span>
+          <span className="max-w-24 truncate sm:max-w-40">{selected ?? "Selecione um SVC"}</span>
           <ChevronDown className="h-4 w-4 text-slate-400" aria-hidden="true" />
         </button>
       )}

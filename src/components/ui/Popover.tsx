@@ -50,7 +50,7 @@ export function Popover({ trigger, children, align = "left", panelClassName = ""
       {trigger({ open, toggle: () => setOpen((value) => !value) })}
       {open && (
         <div
-          className={`absolute z-20 mt-2 ${align === "right" ? "right-0" : "left-0"} ${panelClassName}`}
+          className={`absolute z-20 mt-2 max-w-[calc(100vw-2rem)] ${align === "right" ? "right-0" : "left-0"} ${panelClassName}`}
         >
           {children({ close: () => setOpen(false) })}
         </div>
