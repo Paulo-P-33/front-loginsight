@@ -35,7 +35,7 @@ async function readBlobBatches(): Promise<ReportBatch[]> {
   const url = await findDataBlobUrl();
   if (!url) return [];
 
-  const response = await fetch(url, { cache: "no-store" });
+  const response = await fetch(`${url}?t=${Date.now()}`, { cache: "no-store" });
   if (!response.ok) return [];
 
   try {
@@ -52,6 +52,7 @@ async function writeBlobBatches(batches: ReportBatch[]): Promise<void> {
     addRandomSuffix: false,
     allowOverwrite: true,
     contentType: "application/json",
+    cacheControlMaxAge: 60,
   });
 }
 
